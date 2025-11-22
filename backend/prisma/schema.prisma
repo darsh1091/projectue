@@ -1,0 +1,147 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int       @id @default(autoincrement())
+  name      String
+  email     String    @unique
+  password  String
+  role      Role      @default(CUSTOMER)
+  address   String?
+  phone     String?
+  orders    Order[]
+  reviews   Review[]
+  cartItems CartItem[]
+  services  ServiceRequest[]
+  addresses Address[]
+  createdAt DateTime  @default(now())
+}
+
+enum Role {
+  CUSTOMER
+  ADMIN
+  TECHNICIAN
+}
+
+model Department {
+  id         Int        @id @default(autoincrement())
+  name       String
+  description String?
+  categories Category[]
+}
+
+model Category {
+  id            Int       @id @default(autoincrement())
+  name          String
+  description   String?
+  departmentId  Int
+  department    Department @relation(fields: [departmentId], references: [id])
+  products      Product[]
+}
+
+model Product {
+  id          Int        @id @default(autoincrement())
+  name        String
+  description String
+  price       Float
+  stock       Int
+  brand       String
+  image       String?
+  rating      Float      @default(0)
+  categoryId  Int
+  category    Category   @relation(fields: [categoryId], references: [id])
+  reviews     Review[]
+  orderItems  OrderItem[]
+  createdAt   DateTime   @default(now())
+}
+
+model Review {
+  id        Int      @id @default(autoincrement())
+  rating    Int
+  comment   String
+  userId    Int
+  productId Int
+  user      User     @relation(fields: [userId], references: [id])
+  product   Product  @relation(fields: [productId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+model CartItem {
+  id        Int     @id @default(autoincrement())
+  quantity  Int
+  userId    Int
+  productId Int
+  user      User    @relation(fields: [userId], references: [id])
+  product   Product @relation(fields: [productId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+model Order {
+  id             Int         @id @default(autoincrement())
+  total          Float
+  tax            Float       @default(0)
+  status         OrderStatus @default(PENDING)
+  userId         Int
+  user           User        @relation(fields: [userId], references: [id])
+  items          OrderItem[]
+  shippingAddress String
+  shippingMethod  String
+  createdAt      DateTime    @default(now())
+}
+
+enum OrderStatus {
+  PENDING
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+  RETURN_REQUESTED
+}
+
+model OrderItem {
+  id        Int     @id @default(autoincrement())
+  quantity  Int
+  price     Float
+  orderId   Int
+  productId Int
+  order     Order   @relation(fields: [orderId], references: [id])
+  product   Product @relation(fields: [productId], references: [id])
+}
+
+model ServiceRequest {
+  id            Int      @id @default(autoincrement())
+  type          String
+  description   String
+  preferredDate DateTime
+  status        ServiceStatus @default(SCHEDULED)
+  userId        Int
+  user          User     @relation(fields: [userId], references: [id])
+  createdAt     DateTime @default(now())
+}
+
+enum ServiceStatus {
+  SCHEDULED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+model Address {
+  id         Int     @id @default(autoincrement())
+  line1      String
+  line2      String?
+  city       String
+  state      String
+  postalCode String
+  country    String
+  isDefault  Boolean @default(false)
+  userId     Int
+  user       User    @relation(fields: [userId], references: [id])
+  createdAt  DateTime @default(now())
+}
