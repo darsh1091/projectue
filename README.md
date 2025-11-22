@@ -50,10 +50,11 @@ PORT=4000
 - Frontend: `cd frontend && npm test` (Vitest)
 
 ## Repository workflow
-This repository is already on the `main` branch locally. To publish every generated file (backend, frontend, prisma, docs, configs) to your GitHub repository:
-1. Add your remote: `git remote add origin https://github.com/darsh1091/projectue.git`
-2. Push everything: `git push -u origin main`
+The working copy is already on the `main` branch locally (run `git branch --show-current` to confirm). To push every generated file—`backend/`, `frontend/`, `prisma/`, `docs/`, configs, and root docs—to your GitHub repository:
+1. Add your remote (only once): `git remote add origin https://github.com/darsh1091/projectue.git`
+2. Push the current branch: `git push -u origin main`
 
 Notes:
 - If you previously saw an `ETARGET` error for `supertest`, it is pinned to `^6.3.3` here, so `npm install` should resolve normally.
 - All application source is already present in `backend`, `frontend`, `prisma`, and `docs` along with the root documentation. No placeholder files remain.
+- If the remote already exists, you can verify it with `git remote -v` and proceed directly to `git push origin main`.
